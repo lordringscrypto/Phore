@@ -1,0 +1,26 @@
+[Unit]
+Description=CDI's distributed currency daemon
+After=network.target
+
+[Service]
+User=cdi
+Group=cdi
+
+Type=forking
+PIDFile=/var/lib/cdid/cdid.pid
+
+ExecStart=/usr/bin/cdid -daemon -pid=/var/lib/cdid/cdid.pid \
+          -conf=/etc/cdi/cdi.conf -datadir=/var/lib/cdid
+
+ExecStop=-/usr/bin/cdi-cli -conf=/etc/cdi/cdi.conf \
+         -datadir=/var/lib/cdid stop
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target

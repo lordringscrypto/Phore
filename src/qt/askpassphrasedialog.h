@@ -11,31 +11,31 @@ class WalletModel;
 
 namespace Ui
 {
-class AskPassphraseDialog;
+class AskPasscdiaseDialog;
 }
 
-/** Multifunctional dialog to ask for passphrases. Used for encryption, unlocking, and changing the passphrase.
+/** Multifunctional dialog to ask for passcdiases. Used for encryption, unlocking, and changing the passcdiase.
  */
-class AskPassphraseDialog : public QDialog
+class AskPasscdiaseDialog : public QDialog
 {
     Q_OBJECT
 
 public:
     enum Mode {
-        Encrypt,         /**< Ask passphrase twice and encrypt */
-        UnlockAnonymize, /**< Ask passphrase and unlock only for anonymization */
-        Unlock,          /**< Ask passphrase and unlock */
-        ChangePass,      /**< Ask old passphrase + new passphrase twice */
-        Decrypt          /**< Ask passphrase and decrypt wallet */
+        Encrypt,         /**< Ask passcdiase twice and encrypt */
+        UnlockAnonymize, /**< Ask passcdiase and unlock only for anonymization */
+        Unlock,          /**< Ask passcdiase and unlock */
+        ChangePass,      /**< Ask old passcdiase + new passcdiase twice */
+        Decrypt          /**< Ask passcdiase and decrypt wallet */
     };
 
-    explicit AskPassphraseDialog(Mode mode, QWidget* parent, WalletModel* model);
-    ~AskPassphraseDialog();
+    explicit AskPasscdiaseDialog(Mode mode, QWidget* parent, WalletModel* model);
+    ~AskPasscdiaseDialog();
 
     void accept();
 
 private:
-    Ui::AskPassphraseDialog* ui;
+    Ui::AskPasscdiaseDialog* ui;
     Mode mode;
     WalletModel* model;
     bool fCapsLock;

@@ -1,0 +1,26 @@
+# /etc/conf.d/cdid: config file for /etc/init.d/cdid
+
+# Config file location
+#BITCOIND_CONFIGFILE="/etc/cdi/cdi.conf"
+
+# What directory to write pidfile to?  (created and owned by $BITCOIND_USER)
+#BITCOIND_PIDDIR="/var/run/cdid"
+
+# What filename to give the pidfile
+#BITCOIND_PIDFILE="${BITCOIND_PIDDIR}/cdid.pid"
+
+# Where to write cdid data (be mindful that the blockchain is large)
+#BITCOIND_DATADIR="/var/lib/cdid"
+
+# User and group to own cdid process
+#BITCOIND_USER="cdi"
+#BITCOIND_GROUP="cdi"
+
+# Path to cdid executable
+#BITCOIND_BIN="/usr/bin/cdid"
+
+# Nice value to run cdid under
+#BITCOIND_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+BITCOIND_OPTS=""
