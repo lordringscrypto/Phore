@@ -33,15 +33,15 @@ using namespace boost::assign;
 int64_t nWalletUnlockTime;
 static CCriticalSection cs_nWalletUnlockTime;
 
-std::string HelpRequiringPasscdiase()
+std::string HelpRequiringPassphrase()
 {
-    return pwalletMain && pwalletMain->IsCrypted() ? "\nRequires wallet passcdiase to be set with walletpasscdiase call." : "";
+    return pwalletMain && pwalletMain->IsCrypted() ? "\nRequires wallet passphrase to be set with walletpassphrase call." : "";
 }
 
 void EnsureWalletIsUnlocked()
 {
     if (pwalletMain->IsLocked() || pwalletMain->fWalletUnlockAnonymizeOnly)
-        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passcdiase with walletpasscdiase first.");
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 }
 
 void WalletTxToJSON(const CWalletTx& wtx, UniValue& entry)
@@ -338,7 +338,7 @@ UniValue sendtoaddress(const UniValue& params, bool fHelp)
         throw runtime_error(
             "sendtoaddress \"cdiaddress\" amount ( \"comment\" \"comment-to\" )\n"
             "\nSend an amount to a given address. The amount is a real and is rounded to the nearest 0.00000001\n" +
-            HelpRequiringPasscdiase() +
+            HelpRequiringPassphrase() +
             "\nArguments:\n"
             "1. \"cdiaddress\"  (string, required) The cdi address to send to.\n"
             "2. \"amount\"      (numeric, required) The amount in cdi to send. e.g. 0.1\n"
@@ -381,7 +381,7 @@ UniValue sendtoaddressix(const UniValue& params, bool fHelp)
         throw runtime_error(
             "sendtoaddressix \"cdiaddress\" amount ( \"comment\" \"comment-to\" )\n"
             "\nSend an amount to a given address. The amount is a real and is rounded to the nearest 0.00000001\n" +
-            HelpRequiringPasscdiase() +
+            HelpRequiringPassphrase() +
             "\nArguments:\n"
             "1. \"cdiaddress\"  (string, required) The cdi address to send to.\n"
             "2. \"amount\"      (numeric, required) The  to send. e.g. 0.1\n"
@@ -469,7 +469,7 @@ UniValue signmessage(const UniValue& params, bool fHelp)
         throw runtime_error(
             "signmessage \"cdiaddress\" \"message\"\n"
             "\nSign a message with the private key of an address" +
-            HelpRequiringPasscdiase() + "\n"
+            HelpRequiringPassphrase() + "\n"
                                         "\nArguments:\n"
                                         "1. \"cdiaddress\"  (string, required) The cdi address to use for the private key.\n"
                                         "2. \"message\"         (string, required) The message to create a signature of.\n"
@@ -477,7 +477,7 @@ UniValue signmessage(const UniValue& params, bool fHelp)
                                         "\"signature\"          (string) The signature of the message encoded in base 64\n"
                                         "\nExamples:\n"
                                         "\nUnlock the wallet for 30 seconds\n" +
-            HelpExampleCli("walletpasscdiase", "\"mypasscdiase\" 30") +
+            HelpExampleCli("walletpassphrase", "\"mypassphrase\" 30") +
             "\nCreate the signature\n" + HelpExampleCli("signmessage", "\"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" \"my message\"") +
             "\nVerify the signature\n" + HelpExampleCli("verifymessage", "\"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" \"signature\" \"my message\"") +
             "\nAs json rpc\n" + HelpExampleRpc("signmessage", "\"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\", \"my message\""));
@@ -794,7 +794,7 @@ UniValue sendfrom(const UniValue& params, bool fHelp)
             "sendfrom \"fromaccount\" \"tocdiaddress\" amount ( minconf \"comment\" \"comment-to\" )\n"
             "\nSent an amount from an account to a cdi address.\n"
             "The amount is a real and is rounded to the nearest 0.00000001." +
-            HelpRequiringPasscdiase() + "\n"
+            HelpRequiringPassphrase() + "\n"
                                         "\nArguments:\n"
                                         "1. \"fromaccount\"       (string, required) The name of the account to send funds from. May be the default account using \"\".\n"
                                         "2. \"tocdiaddress\"  (string, required) The cdi address to send funds to.\n"
@@ -850,7 +850,7 @@ UniValue sendmany(const UniValue& params, bool fHelp)
         throw runtime_error(
             "sendmany \"fromaccount\" {\"address\":amount,...} ( minconf \"comment\" )\n"
             "\nSend multiple times. Amounts are double-precision floating point numbers." +
-            HelpRequiringPasscdiase() + "\n"
+            HelpRequiringPassphrase() + "\n"
                                         "\nArguments:\n"
                                         "1. \"fromaccount\"         (string, required) The account to send the funds from, can be \"\" for the default account\n"
                                         "2. \"amounts\"             (string, required) A json object with addresses and amounts\n"
@@ -1618,7 +1618,7 @@ UniValue keypoolrefill(const UniValue& params, bool fHelp)
         throw runtime_error(
             "keypoolrefill ( newsize )\n"
             "\nFills the keypool." +
-            HelpRequiringPasscdiase() + "\n"
+            HelpRequiringPassphrase() + "\n"
                                         "\nArguments\n"
                                         "1. newsize     (numeric, optional, default=100) The new keypool size\n"
                                         "\nExamples:\n" +
@@ -1652,35 +1652,35 @@ static void LockWallet(CWallet* pWallet)
     pWallet->Lock();
 }
 
-UniValue walletpasscdiase(const UniValue& params, bool fHelp)
+UniValue walletpassphrase(const UniValue& params, bool fHelp)
 {
     if (pwalletMain->IsCrypted() && (fHelp || params.size() < 2 || params.size() > 3))
         throw runtime_error(
-            "walletpasscdiase \"passcdiase\" timeout ( anonymizeonly )\n"
+            "walletpassphrase \"passphrase\" timeout ( anonymizeonly )\n"
             "\nStores the wallet decryption key in memory for 'timeout' seconds.\n"
             "This is needed prior to performing transactions related to private keys such as sending CDIs\n"
             "\nArguments:\n"
-            "1. \"passcdiase\"     (string, required) The wallet passcdiase\n"
+            "1. \"passphrase\"     (string, required) The wallet passphrase\n"
             "2. timeout            (numeric, required) The time to keep the decryption key in seconds.\n"
             "3. anonymizeonly      (boolean, optional, default=flase) If is true sending functions are disabled."
             "\nNote:\n"
-            "Issuing the walletpasscdiase command while the wallet is already unlocked will set a new unlock\n"
+            "Issuing the walletpassphrase command while the wallet is already unlocked will set a new unlock\n"
             "time that overrides the old one. A timeout of \"0\" unlocks until the wallet is closed.\n"
             "\nExamples:\n"
             "\nUnlock the wallet for 60 seconds\n" +
-            HelpExampleCli("walletpasscdiase", "\"my pass cdiase\" 60") +
-            "\nUnlock the wallet for 60 seconds but allow anonymization, automint, and staking only\n" + HelpExampleCli("walletpasscdiase", "\"my pass cdiase\" 60 true") +
+            HelpExampleCli("walletpassphrase", "\"my pass cdiase\" 60") +
+            "\nUnlock the wallet for 60 seconds but allow anonymization, automint, and staking only\n" + HelpExampleCli("walletpassphrase", "\"my pass cdiase\" 60 true") +
             "\nLock the wallet again (before 60 seconds)\n" + HelpExampleCli("walletlock", "") +
-            "\nAs json rpc call\n" + HelpExampleRpc("walletpasscdiase", "\"my pass cdiase\", 60"));
+            "\nAs json rpc call\n" + HelpExampleRpc("walletpassphrase", "\"my pass cdiase\", 60"));
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
     if (fHelp)
         return true;
     if (!pwalletMain->IsCrypted())
-        throw JSONRPCError(RPC_WALLET_WRONG_ENC_STATE, "Error: running with an unencrypted wallet, but walletpasscdiase was called.");
+        throw JSONRPCError(RPC_WALLET_WRONG_ENC_STATE, "Error: running with an unencrypted wallet, but walletpassphrase was called.");
 
-    // Note that the walletpasscdiase is stored in params[0] which is not mlock()ed
+    // Note that the walletpassphrase is stored in params[0] which is not mlock()ed
     SecureString strWalletPass;
     strWalletPass.reserve(100);
     // TODO: get rid of this .c_str() by implementing SecureString::operator=(std::string)
@@ -1695,7 +1695,7 @@ UniValue walletpasscdiase(const UniValue& params, bool fHelp)
         throw JSONRPCError(RPC_WALLET_ALREADY_UNLOCKED, "Error: Wallet is already unlocked.");
 
     if (!pwalletMain->Unlock(strWalletPass, anonymizeOnly))
-        throw JSONRPCError(RPC_WALLET_PASSCDIASE_INCORRECT, "Error: The wallet passcdiase entered was incorrect.");
+        throw JSONRPCError(RPC_WALLET_PASSPHRASE_INCORRECT, "Error: The wallet passphrase entered was incorrect.");
 
     pwalletMain->TopUpKeyPool();
 
@@ -1712,24 +1712,24 @@ UniValue walletpasscdiase(const UniValue& params, bool fHelp)
 }
 
 
-UniValue walletpasscdiasechange(const UniValue& params, bool fHelp)
+UniValue walletpassphrasechange(const UniValue& params, bool fHelp)
 {
     if (pwalletMain->IsCrypted() && (fHelp || params.size() != 2))
         throw runtime_error(
-            "walletpasscdiasechange \"oldpasscdiase\" \"newpasscdiase\"\n"
-            "\nChanges the wallet passcdiase from 'oldpasscdiase' to 'newpasscdiase'.\n"
+            "walletpassphrasechange \"oldpassphrase\" \"newpassphrase\"\n"
+            "\nChanges the wallet passphrase from 'oldpassphrase' to 'newpassphrase'.\n"
             "\nArguments:\n"
-            "1. \"oldpasscdiase\"      (string) The current passcdiase\n"
-            "2. \"newpasscdiase\"      (string) The new passcdiase\n"
+            "1. \"oldpassphrase\"      (string) The current passphrase\n"
+            "2. \"newpassphrase\"      (string) The new passphrase\n"
             "\nExamples:\n" +
-            HelpExampleCli("walletpasscdiasechange", "\"old one\" \"new one\"") + HelpExampleRpc("walletpasscdiasechange", "\"old one\", \"new one\""));
+            HelpExampleCli("walletpassphrasechange", "\"old one\" \"new one\"") + HelpExampleRpc("walletpassphrasechange", "\"old one\", \"new one\""));
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
     if (fHelp)
         return true;
     if (!pwalletMain->IsCrypted())
-        throw JSONRPCError(RPC_WALLET_WRONG_ENC_STATE, "Error: running with an unencrypted wallet, but walletpasscdiasechange was called.");
+        throw JSONRPCError(RPC_WALLET_WRONG_ENC_STATE, "Error: running with an unencrypted wallet, but walletpassphrasechange was called.");
 
     // TODO: get rid of these .c_str() calls by implementing SecureString::operator=(std::string)
     // Alternately, find a way to make params[0] mlock()'d to begin with.
@@ -1743,11 +1743,11 @@ UniValue walletpasscdiasechange(const UniValue& params, bool fHelp)
 
     if (strOldWalletPass.length() < 1 || strNewWalletPass.length() < 1)
         throw runtime_error(
-            "walletpasscdiasechange <oldpasscdiase> <newpasscdiase>\n"
-            "Changes the wallet passcdiase from <oldpasscdiase> to <newpasscdiase>.");
+            "walletpassphrasechange <oldpassphrase> <newpassphrase>\n"
+            "Changes the wallet passphrase from <oldpassphrase> to <newpassphrase>.");
 
-    if (!pwalletMain->ChangeWalletPasscdiase(strOldWalletPass, strNewWalletPass))
-        throw JSONRPCError(RPC_WALLET_PASSCDIASE_INCORRECT, "Error: The wallet passcdiase entered was incorrect.");
+    if (!pwalletMain->ChangeWalletPassphrase(strOldWalletPass, strNewWalletPass))
+        throw JSONRPCError(RPC_WALLET_PASSPHRASE_INCORRECT, "Error: The wallet passphrase entered was incorrect.");
 
     return NullUniValue;
 }
@@ -1759,13 +1759,13 @@ UniValue walletlock(const UniValue& params, bool fHelp)
         throw runtime_error(
             "walletlock\n"
             "\nRemoves the wallet encryption key from memory, locking the wallet.\n"
-            "After calling this method, you will need to call walletpasscdiase again\n"
+            "After calling this method, you will need to call walletpassphrase again\n"
             "before being able to call any methods which require the wallet to be unlocked.\n"
             "\nExamples:\n"
-            "\nSet the passcdiase for 2 minutes to perform a transaction\n" +
-            HelpExampleCli("walletpasscdiase", "\"my pass cdiase\" 120") +
-            "\nPerform a send (requires passcdiase set)\n" + HelpExampleCli("sendtoaddress", "\"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 1.0") +
-            "\nClear the passcdiase since we are done before 2 minutes is up\n" + HelpExampleCli("walletlock", "") +
+            "\nSet the passphrase for 2 minutes to perform a transaction\n" +
+            HelpExampleCli("walletpassphrase", "\"my pass cdiase\" 120") +
+            "\nPerform a send (requires passphrase set)\n" + HelpExampleCli("sendtoaddress", "\"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 1.0") +
+            "\nClear the passphrase since we are done before 2 minutes is up\n" + HelpExampleCli("walletlock", "") +
             "\nAs json rpc call\n" + HelpExampleRpc("walletlock", ""));
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
@@ -1789,21 +1789,21 @@ UniValue encryptwallet(const UniValue& params, bool fHelp)
 {
     if (!pwalletMain->IsCrypted() && (fHelp || params.size() != 1))
         throw runtime_error(
-            "encryptwallet \"passcdiase\"\n"
-            "\nEncrypts the wallet with 'passcdiase'. This is for first time encryption.\n"
+            "encryptwallet \"passphrase\"\n"
+            "\nEncrypts the wallet with 'passphrase'. This is for first time encryption.\n"
             "After this, any calls that interact with private keys such as sending or signing \n"
-            "will require the passcdiase to be set prior the making these calls.\n"
-            "Use the walletpasscdiase call for this, and then walletlock call.\n"
-            "If the wallet is already encrypted, use the walletpasscdiasechange call.\n"
+            "will require the passphrase to be set prior the making these calls.\n"
+            "Use the walletpassphrase call for this, and then walletlock call.\n"
+            "If the wallet is already encrypted, use the walletpassphrasechange call.\n"
             "Note that this will shutdown the server.\n"
             "\nArguments:\n"
-            "1. \"passcdiase\"    (string) The pass cdiase to encrypt the wallet with. It must be at least 1 character, but should be long.\n"
+            "1. \"passphrase\"    (string) The pass cdiase to encrypt the wallet with. It must be at least 1 character, but should be long.\n"
             "\nExamples:\n"
             "\nEncrypt you wallet\n" +
             HelpExampleCli("encryptwallet", "\"my pass cdiase\"") +
-            "\nNow set the passcdiase to use the wallet, such as for signing or sending CDIs\n" + HelpExampleCli("walletpasscdiase", "\"my pass cdiase\"") +
+            "\nNow set the passphrase to use the wallet, such as for signing or sending CDIs\n" + HelpExampleCli("walletpassphrase", "\"my pass cdiase\"") +
             "\nNow we can so something like sign\n" + HelpExampleCli("signmessage", "\"cdiaddress\" \"test message\"") +
-            "\nNow lock the wallet again by removing the passcdiase\n" + HelpExampleCli("walletlock", "") +
+            "\nNow lock the wallet again by removing the passphrase\n" + HelpExampleCli("walletlock", "") +
             "\nAs a json rpc call\n" + HelpExampleRpc("encryptwallet", "\"my pass cdiase\""));
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
@@ -1821,8 +1821,8 @@ UniValue encryptwallet(const UniValue& params, bool fHelp)
 
     if (strWalletPass.length() < 1)
         throw runtime_error(
-            "encryptwallet <passcdiase>\n"
-            "Encrypts the wallet with <passcdiase>.");
+            "encryptwallet <passphrase>\n"
+            "Encrypts the wallet with <passphrase>.");
 
     if (!pwalletMain->EncryptWallet(strWalletPass))
         throw JSONRPCError(RPC_WALLET_ENCRYPTION_FAILED, "Error: Failed to encrypt the wallet.");
@@ -2346,7 +2346,7 @@ UniValue multisend(const UniValue& params, bool fHelp)
     if (boost::lexical_cast<int>(params[1].get_str()) < 0)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, expected valid percentage");
     if (pwalletMain->IsLocked())
-        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passcdiase with walletpasscdiase first.");
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
     unsigned int nPercent = boost::lexical_cast<unsigned int>(params[1].get_str());
 
     LOCK(pwalletMain->cs_wallet);
@@ -2386,12 +2386,12 @@ UniValue getzerocoinbalance(const UniValue& params, bool fHelp)
     if (fHelp || params.size() != 0)
         throw runtime_error(
                             "getzerocoinbalance\n"
-                            + HelpRequiringPasscdiase());
+                            + HelpRequiringPassphrase());
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
     if (pwalletMain->IsLocked())
-        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passcdiase with walletpasscdiase first.");
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 
     return ValueFromAmount(pwalletMain->GetZerocoinBalance(true));
 
@@ -2402,12 +2402,12 @@ UniValue listmintedzerocoins(const UniValue& params, bool fHelp)
     if (fHelp || params.size() != 0)
         throw runtime_error(
                             "listmintedzerocoins\n"
-                            + HelpRequiringPasscdiase());
+                            + HelpRequiringPassphrase());
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
     if (pwalletMain->IsLocked())
-        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passcdiase with walletpasscdiase first.");
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 
     CWalletDB walletdb(pwalletMain->strWalletFile);
     list<CZerocoinMint> listPubCoin = walletdb.ListMintedCoins(true, false, true);
@@ -2426,12 +2426,12 @@ UniValue listzerocoinamounts(const UniValue& params, bool fHelp)
     if (fHelp || params.size() != 0)
         throw runtime_error(
             "listzerocoinamounts\n"
-            + HelpRequiringPasscdiase());
+            + HelpRequiringPassphrase());
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
     if (pwalletMain->IsLocked())
-        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passcdiase with walletpasscdiase first.");
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 
     CWalletDB walletdb(pwalletMain->strWalletFile);
     list<CZerocoinMint> listPubCoin = walletdb.ListMintedCoins(true, true, true);
@@ -2461,12 +2461,12 @@ UniValue listspentzerocoins(const UniValue& params, bool fHelp)
     if (fHelp || params.size() != 0)
         throw runtime_error(
             "listspentzerocoins\n"
-            + HelpRequiringPasscdiase());
+            + HelpRequiringPassphrase());
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
     if (pwalletMain->IsLocked())
-        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passcdiase with walletpasscdiase first.");
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 
     CWalletDB walletdb(pwalletMain->strWalletFile);
     list<CBigNum> listPubCoin = walletdb.ListSpentCoinsSerial();
@@ -2485,7 +2485,7 @@ UniValue mintzerocoin(const UniValue& params, bool fHelp)
         throw runtime_error(
             "mintzerocoin <amount>\n"
             "Usage: Enter an amount of Phr to convert to zPhr"
-            + HelpRequiringPasscdiase());
+            + HelpRequiringPassphrase());
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
@@ -2495,7 +2495,7 @@ UniValue mintzerocoin(const UniValue& params, bool fHelp)
         throw JSONRPCError(RPC_WALLET_ERROR, "zCDI is currently disabled due to maintenance.");
 
     if (pwalletMain->IsLocked())
-        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passcdiase with walletpasscdiase first.");
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 
     CAmount nAmount = params[0].get_int() * COIN;
 
@@ -2535,7 +2535,7 @@ UniValue spendzerocoin(const UniValue& params, bool fHelp)
                     "of checkpoints available. Tip: adding more checkpoints makes the minting process take longer\n"
             "address: Send straight to an address or leave the address blank and the wallet will send to a change address. If there is change then"
                     "an address is required"
-            + HelpRequiringPasscdiase());
+            + HelpRequiringPassphrase());
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
     
@@ -2544,7 +2544,7 @@ UniValue spendzerocoin(const UniValue& params, bool fHelp)
 
     int64_t nTimeStart = GetTimeMillis();
     if (pwalletMain->IsLocked())
-        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passcdiase with walletpasscdiase first.");
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 
     CAmount nAmount = AmountFromValue(params[0]);   // Spending amount
     bool fMintChange = params[1].get_bool();        // Mint change to zCDI
@@ -2625,7 +2625,7 @@ UniValue resetmintzerocoin(const UniValue& params, bool fHelp)
             "\nArguments:\n"
             "1. \"extended_search\"      (bool, optional) Rescan each block of the blockchain looking for your mints. WARNING - may take 30+ minutes!\n"
 
-            + HelpRequiringPasscdiase());
+            + HelpRequiringPassphrase());
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
@@ -2668,7 +2668,7 @@ UniValue resetspentzerocoin(const UniValue& params, bool fHelp)
         throw runtime_error(
             "resetspentzerocoin\n"
                 "Scan the blockchain for all of the zerocoins that are held in the wallet.dat. Reset mints that are considered spent that did not make it into the blockchain."
-            + HelpRequiringPasscdiase());
+            + HelpRequiringPassphrase());
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
@@ -2718,7 +2718,7 @@ UniValue getarchivedzerocoin(const UniValue& params, bool fHelp)
             "getarchivedzerocoin\n"
             "Display zerocoins that were archived because they were believed to be orphans."
             "Provides enough information to recover mint if it was incorrectly archived."
-            + HelpRequiringPasscdiase());
+            + HelpRequiringPassphrase());
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
@@ -2770,7 +2770,7 @@ UniValue exportzerocoins(const UniValue& params, bool fHelp)
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
     if (pwalletMain->IsLocked())
-        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passcdiase with walletpasscdiase first.");
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 
     CWalletDB walletdb(pwalletMain->strWalletFile);
 
@@ -2823,7 +2823,7 @@ UniValue importzerocoins(const UniValue& params, bool fHelp)
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
     if(pwalletMain->IsLocked())
-        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passcdiase with walletpasscdiase first.");
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 
     RPCTypeCheck(params, list_of(UniValue::VARR)(UniValue::VOBJ));
     UniValue arrMints = params[0].get_array();
@@ -2892,7 +2892,7 @@ UniValue reconsiderzerocoins(const UniValue& params, bool fHelp)
 
     if(pwalletMain->IsLocked())
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED,
-                           "Error: Please enter the wallet passcdiase with walletpasscdiase first.");
+                           "Error: Please enter the wallet passphrase with walletpassphrase first.");
 
     list<CZerocoinMint> listMints;
     pwalletMain->ReconsiderZerocoins(listMints);

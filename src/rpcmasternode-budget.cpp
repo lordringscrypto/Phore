@@ -59,7 +59,7 @@ UniValue mnbudget(const UniValue& params, bool fHelp)
     if (fHelp ||
         (strCommand != "vote-alias" && strCommand != "vote-many" && strCommand != "prepare" && strCommand != "submit" && strCommand != "vote" && strCommand != "getvotes" && strCommand != "getinfo" && strCommand != "show" && strCommand != "projection" && strCommand != "check" && strCommand != "nextblock"))
         throw runtime_error(
-            "mnbudget \"command\"... ( \"passcdiase\" )\n"
+            "mnbudget \"command\"... ( \"passphrase\" )\n"
             "\nVote or show current budgets\n"
             "This command is deprecated, please see individual command documentation for future reference\n\n"
 
@@ -178,7 +178,7 @@ UniValue preparebudget(const UniValue& params, bool fHelp)
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
     if (pwalletMain->IsLocked())
-        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passcdiase with walletpasscdiase first.");
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 
     std::string strProposalName = SanitizeString(params[0].get_str());
     if (strProposalName.size() > 20)
@@ -862,7 +862,7 @@ UniValue mnfinalbudget(const UniValue& params, bool fHelp)
     if (fHelp ||
         (strCommand != "suggest" && strCommand != "vote-many" && strCommand != "vote" && strCommand != "show" && strCommand != "getvotes"))
         throw runtime_error(
-            "mnfinalbudget \"command\"... ( \"passcdiase\" )\n"
+            "mnfinalbudget \"command\"... ( \"passphrase\" )\n"
             "Vote or show current budgets\n"
             "\nAvailable commands:\n"
             "  vote-many   - Vote on a finalized budget\n"
